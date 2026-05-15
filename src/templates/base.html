@@ -332,6 +332,36 @@
             background: #dc2626;
             box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
         }
+        .timer-input-group {
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .timer-input-group label {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .timer-input-group input {
+            width: 80px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            padding: 8px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            outline: none;
+            transition: 0.2s;
+        }
+        .timer-input-group input:focus {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -406,6 +436,11 @@
         <div class="pomodoro-modal">
             <div class="timer-task-title" id="timerTaskTitle">Focus Session</div>
             <div class="timer-status" id="timerStatus">Stay focused!</div>
+            
+            <div class="timer-input-group" id="timerInputGroup">
+                <label for="timerMinutes">Minutes</label>
+                <input type="number" id="timerMinutes" value="25" min="1" max="120" onchange="resetTimer()">
+            </div>
             
             <div class="timer-circle">
                 <svg class="timer-svg" viewBox="0 0 100 100">
@@ -499,9 +534,9 @@
         function startPomodoro(id, title) {
             currentFocusTaskId = id;
             document.getElementById('timerTaskTitle').textContent = title || 'Focus Session';
+            document.getElementById('timerInputGroup').style.display = 'flex';
             resetTimer();
             openModal('pomodoroModal');
-            toggleTimer(); // Start immediately
         }
 
         function toggleTimer() {
@@ -511,6 +546,7 @@
                 btn.textContent = '▶️';
                 isTimerRunning = false;
             } else {
+                document.getElementById('timerInputGroup').style.display = 'none';
                 timerInterval = setInterval(updateTimer, 1000);
                 btn.textContent = '⏸️';
                 isTimerRunning = true;
@@ -520,11 +556,13 @@
         function resetTimer() {
             clearInterval(timerInterval);
             isTimerRunning = false;
-            timeLeft = 25 * 60;
-            totalTime = 25 * 60;
+            const minsInput = document.getElementById('timerMinutes').value || 25;
+            timeLeft = parseInt(minsInput) * 60;
+            totalTime = timeLeft;
             updateTimerDisplay();
             document.getElementById('timerToggle').textContent = '▶️';
             document.getElementById('timerStatus').textContent = 'Stay focused!';
+            document.getElementById('timerInputGroup').style.display = 'flex';
         }
 
         function updateTimer() {
@@ -557,12 +595,13 @@
             document.getElementById('timerStatus').textContent = 'Session Complete!';
             
             // Log to backend
+            const actualDuration = parseInt(document.getElementById('timerMinutes').value) || 25;
             fetch('/api/pomodoros', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     task_id: currentFocusTaskId,
-                    duration: 25,
+                    duration: actualDuration,
                     was_completed: true
                 })
             })
