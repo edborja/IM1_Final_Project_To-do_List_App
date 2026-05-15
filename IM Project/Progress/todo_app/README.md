@@ -1,6 +1,6 @@
 # CCCS 105 Final Project - To-Do List Application
 
-## a. Introduction
+## A. Introduction
 
 **Background:** Time management and task tracking are essential skills for personal and academic success. This application is designed to help users manage their workload efficiently by combining a to-do list system with Pomodoro timers. 
 
@@ -10,7 +10,7 @@
 
 **Target Users:** Students and professionals who need a structured way to track assignments and maintain focus during work sessions.
 
-## b. Project Objectives
+## B. Project Objectives
 
 **Primary Objective:** To develop a fully functional Python-based database application using Flask and MySQL that demonstrates CRUD operations and fundamental database management concepts.
 
@@ -20,7 +20,7 @@
 - Provide secure user authentication and data isolation (users only see their own tasks).
 - Enable users to log Pomodoro focus sessions effectively.
 
-## c. Business Rules
+## C. Business Rules
 
 **Detailed Business Logic:**
 - **User Authentication:** Passwords must be hashed using `werkzeug.security`. Users must be logged in to view or modify any data.
@@ -36,7 +36,7 @@
 - Users must provide a unique username and email to register.
 - Tasks must have a title to be created.
 
-## d. Database Models
+## D. Database Models
 
 ### Entity Relationship Diagram (ERD)
 
@@ -64,14 +64,23 @@ erDiagram
         string name
         string color
         string icon
+        datetime created_at
         int user_id FK
     }
     TASK {
         int id PK
         string title
         string description
+        string notes
+        string link
         string priority
+        datetime due_date
         boolean is_completed
+        datetime created_at
+        datetime updated_at
+        boolean is_recurring
+        string recurrence_pattern
+        datetime recurrence_end
         int user_id FK
         int category_id FK
     }
@@ -79,11 +88,14 @@ erDiagram
         int id PK
         string title
         boolean is_completed
+        datetime created_at
         int task_id FK
     }
     POMODORO {
         int id PK
         int duration
+        datetime completed_at
+        boolean was_completed
         int user_id FK
         int task_id FK
     }
@@ -145,14 +157,14 @@ erDiagram
     }
 ```
 
-## e. Project Overview
+## E. Project Overview
 
 This project follows the **Model-View-Controller (MVC)** architectural pattern implemented via the Flask framework.
 - **Model:** SQLAlchemy ORM models (`src/models.py`) represent database tables.
 - **View:** HTML/Jinja2 templates (`src/templates/`) provide the user interface.
 - **Controller:** Flask routes and blueprints (`src/main/`, `src/auth/`) handle user requests and business logic.
 
-## f. Setup Instructions
+## F. Setup Instructions
 
 **Prerequisites:**
 - Python 3.8+
@@ -191,26 +203,30 @@ This project follows the **Model-View-Controller (MVC)** architectural pattern i
    ```
 6. **Access:** Open a web browser and go to `https://127.0.0.1:5000/`.
 
-## g. Team Members & Roles
+## G. Team Members & Roles
 
 | Name | Role | Responsibilities |
 | :--- | :--- | :--- |
-| **[INSERT NAME]** | Backend / DB Admin | Created the database schema, models, ERD, and SQL files. |
-| **[INSERT NAME]** | Frontend Developer | Designed HTML templates, CSS, and interactive UI logic. |
-| **[INSERT NAME]** | Lead Programmer | Implemented Flask routes, CRUD operations, Authentication. |
+| **Eduardo Gabriel S. Musa** | Backend / DB Admin | Created the database schema, models, ERD, and SQL files. |
+| **Noelee Anthony S. Barandon** | Frontend Developer | Designed HTML templates, CSS, and interactive UI logic. |
+| **Edmar B. Borja** | Lead Programmer | Implemented Flask routes, CRUD operations, Authentication. |
 
-*(Please replace with actual names and roles)*
-
-## h. Dependencies
+## H. Dependencies
 
 **Python Packages:**
-- `Flask`
-- `Flask-SQLAlchemy`
-- `PyMySQL`
-- `Flask-Login`
-- `Flask-WTF`
-- `Faker` (for mock data generation)
-- `python-dotenv`
+- `Flask` — Web framework
+- `Flask-SQLAlchemy` — ORM for database models
+- `PyMySQL` — MySQL driver (connector)
+- `Flask-Login` — User session management
+- `Flask-WTF` — Form handling and CSRF protection
+- `Flask-Mail` — Email sending (Forgot Password feature)
+- `oauthlib` — OAuth 2.0 (Google & Facebook login)
+- `requests` — HTTP client used by OAuth flows
+- `Faker` — Mock data generation for `initial_data.sql`
+- `python-dotenv` — Loads environment variables from `.env`
+- `werkzeug` — Password hashing (`generate_password_hash`, `check_password_hash`)
+- `email-validator` — Email field validation for WTForms
+- `pytest` / `pytest-flask` — Testing framework
 
 **System Requirements:**
 - Windows/macOS/Linux
@@ -218,15 +234,15 @@ This project follows the **Model-View-Controller (MVC)** architectural pattern i
 - XAMPP (MySQL 5.7+ or MariaDB)
 - Modern Web Browser (Chrome, Firefox, Edge)
 
-## i. Running Instructions
+##  I. Running Instructions
 
 1. Start XAMPP MySQL.
 2. Activate your virtual environment: `.venv\Scripts\activate`
 3. Start the application: `python run.py`
 4. The server will start on `https://127.0.0.1:5000/`.
 5. You can register a new account or use one of the automatically generated accounts from the `initial_data.sql` script. (All generated accounts use the password `password123`).
-6. Navigate using the top bar to create Tasks, group them by Categories, and track time with Pomodoro.
+6. Navigate using the **sidebar** to create Tasks, group them by Categories (Subjects), and track time with Pomodoro. Use the **Tools** section in the sidebar to view Analytics or export your tasks as CSV.
 7. To stop the application, press `CTRL + C` in the terminal.
 
-## j. Demonstration Video
+## J. Demonstration Video
 - **Link:** [INSERT LINK TO VIDEO HERE]

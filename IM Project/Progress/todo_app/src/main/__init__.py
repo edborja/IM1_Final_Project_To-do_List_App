@@ -1,11 +1,18 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+
+# pyrefly: ignore [missing-import]
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, Response
+
+# pyrefly: ignore [missing-import]
 from flask_login import current_user, login_required
 from src import db
 from src.models import Task, Category, Subtask, Pomodoro
 from src.forms import TaskForm, CategoryForm, SubtaskForm
 from src.utils.analytics import get_user_stats
 from datetime import datetime, timedelta
+
 import json
+import csv
+import io
 
 main = Blueprint('main', __name__)
 
@@ -407,3 +414,58 @@ def privacy():
 @main.route('/data-deletion')
 def data_deletion():
     return render_template('data_deletion.html')
+
+# ==================== DATA EXPORT ====================
+
+@main.route('/export/csv')
+@login_required
+def export_csv():
+    """Export all of the current user's tasks to a CSV file."""
+    tasks = Task.query.filter_by(user_id=current_user.id).order_by(Task.created_at.desc()).all()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+
+    # Header row
+    writer.writerow([
+        'ID', 'Title', 'Description', 'Notes', 'Link',
+        'Priority', 'Due Date', 'Is Completed',
+        'Category', 'Is Recurring', 'Recurrence Pattern',
+        'Recurrence End', 'Created At', 'Updated At',
+        'Subtasks (count)', 'Subtasks (completed)'
+    ])
+
+    for task in tasks:
+        category_name = task.category.name if task.category else ''
+        subtask_total = task.subtasks.count()
+        subtask_done = task.subtasks.filter_by(is_completed=True).count()
+
+        writer.writerow([
+            task.id,
+            task.title,
+            task.description or '',
+            task.notes or '',
+            task.link or '',
+            task.priority or '',
+            task.due_date.strftime('%Y-%m-%d %H:%M') if task.due_date else '',
+            'Yes' if task.is_completed else 'No',
+            category_name,
+            'Yes' if task.is_recurring else 'No',
+            task.recurrence_pattern or '',
+            task.recurrence_end.strftime('%Y-%m-%d') if task.recurrence_end else '',
+            task.created_at.strftime('%Y-%m-%d %H:%M') if task.created_at else '',
+            task.updated_at.strftime('%Y-%m-%d %H:%M') if task.updated_at else '',
+            subtask_total,
+            subtask_done
+        ])
+
+    output.seek(0)
+    filename = f"tasks_{current_user.username}_{datetime.utcnow().strftime('%Y%m%d')}.csv"
+
+    return Response(
+        output.getvalue(),
+        mimetype='text/csv',
+        headers={'Content-Disposition': f'attachment; filename={filename}'}
+
+
+    )

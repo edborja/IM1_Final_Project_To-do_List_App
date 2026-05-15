@@ -265,9 +265,22 @@
                 <button class="nav-label" onclick="toggleSection('subjects')">Subjects</button>
                 <div id="subjects-section">
                     {% for category in categories|default([]) %}
-                    <a href="{{ url_for('main.index', category=category.id) }}" class="nav-item" onclick="event.stopPropagation(); openEditCategory({{ category.id }}, '{{ category.name }}', '{{ category.color }}', '{{ category.icon }}'); return false;"><span>📚</span> {{ category.name }}</a>
+                    <a href="{{ url_for('main.index', category=category.id) }}"
+                       class="nav-item"
+                       data-cat-id="{{ category.id }}"
+                       data-cat-name="{{ category.name }}"
+                       data-cat-color="{{ category.color }}"
+                       data-cat-icon="{{ category.icon }}"
+                       onclick="event.stopPropagation(); openEditCategory(this.dataset.catId, this.dataset.catName, this.dataset.catColor, this.dataset.catIcon); return false;"><span>📚</span> {{ category.name }}</a>
                     {% endfor %}
                     <button class="nav-item" onclick="openModal('categoryModal')"><span>➕</span> Add</button>
+                </div>
+            </nav>
+            <nav class="nav-section">
+                <button class="nav-label" onclick="toggleSection('tools')">Tools</button>
+                <div id="tools-section">
+                    <a href="{{ url_for('main.analytics') }}" class="nav-item"><span>📊</span> Analytics</a>
+                    <a href="{{ url_for('main.export_csv') }}" class="nav-item" title="Download all tasks as CSV"><span>⬇️</span> Export CSV</a>
                 </div>
             </nav>
             <nav class="nav-section">
