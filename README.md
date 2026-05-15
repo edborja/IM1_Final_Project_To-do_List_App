@@ -245,4 +245,4 @@ This project follows the **Model-View-Controller (MVC)** architectural pattern i
 7. To stop the application, press `CTRL + C` in the terminal.
 
 ## J. Demonstration Video
-- **Link:** [INSERT LINK TO VIDEO HERE]
+- **Link:** **https://drive.google.com/drive/folders/1EWkfyBVQ_c98mpPhzIlO-2g43Y3LBeaC?usp=sharing**
