@@ -302,3 +302,14 @@ def create_pomodoro():
     db.session.commit()
     
     return jsonify({'pomodoro': pomodoro.to_dict()}), 201
+
+@api.route('/tasks/<int:task_id>/complete', methods=['POST'])
+@login_required
+def complete_task(task_id):
+    task = get_user_task(task_id)
+    if not task:
+        return jsonify({'success': False, 'error': 'Task not found'}), 404
+
+    task.is_completed = True
+    db.session.commit()
+    return jsonify({'success': True})
