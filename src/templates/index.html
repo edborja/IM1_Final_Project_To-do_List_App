@@ -1,4 +1,4 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 
 {% block title %}Tasks{% endblock %}
 
@@ -10,6 +10,7 @@
             <span>🔍</span>
             <input type="text" name="q" placeholder="Search..." value="{{ request.args.get('q', '') }}">
         </form>
+        <a href="{{ url_for('main.export_csv') }}" class="btn btn-secondary" title="Download CSV">📥 Export</a>
         <button class="btn btn-primary" onclick="openModal('taskModal')">+ New Task</button>
         <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary">🚪 Logout</a>
     </div>
