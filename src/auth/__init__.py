@@ -1,8 +1,14 @@
+# pyrefly: ignore [missing-import]
 from flask import Blueprint, render_template, redirect, url_for, flash, request, session, current_app
+# pyrefly: ignore [missing-import]
 from flask_login import login_user, logout_user, login_required, current_user
+# pyrefly: ignore [missing-import]
 from flask_mail import Message
+# pyrefly: ignore [missing-import]
 from oauthlib.oauth2 import WebApplicationClient
+# pyrefly: ignore [missing-import]
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
+# pyrefly: ignore [missing-import]
 import requests
 from src import db, mail
 from src.models import User
@@ -45,8 +51,8 @@ def oauth_login(provider):
             authorization_endpoint,
             redirect_uri=redirect_uri,
             scope=['openid', 'email', 'profile'],
+            prompt='select_account'
         )
-        print(f"Full request URI: {request_uri}")
         return redirect(request_uri)
     
     elif provider == 'facebook':
@@ -65,7 +71,7 @@ def oauth_login(provider):
         request_uri = client.prepare_request_uri(
             authorization_endpoint,
             redirect_uri=redirect_uri,
-            scope=['email'],
+            scope=['email', 'public_profile'],
         )
         return redirect(request_uri)
     
@@ -138,7 +144,7 @@ def oauth_callback(provider):
                     counter += 1
                 
                 user = User(username=username, email=email)
-                user.set_password('oauth_user_' + str(user.id))  # Random password
+                user.set_password('oauth_user_' + email)  # Use email for unique seed if id is not yet available
                 db.session.add(user)
                 db.session.commit()
             
@@ -167,6 +173,7 @@ def oauth_callback(provider):
             # Exchange code for access token
             token_url = 'https://graph.facebook.com/v18.0/oauth/access_token'
             redirect_uri = url_for('auth.oauth_callback', provider='facebook', _external=True)
+            
             token_response = requests.get(token_url, params={
                 'client_id': client_id,
                 'client_secret': client_secret,
@@ -191,8 +198,8 @@ def oauth_callback(provider):
             
             email = userinfo.get('email')
             if not email:
-                flash('Facebook email permission required. Please grant email access.', 'danger')
-                return redirect(url_for('auth.login'))
+                # Fallback for accounts without email or denied permission
+                email = f"fb_{userinfo.get('id')}@facebook.com"
             
             user = User.query.filter_by(email=email).first()
             if not user:
@@ -204,7 +211,7 @@ def oauth_callback(provider):
                     counter += 1
                 
                 user = User(username=username, email=email)
-                user.set_password('oauth_user_' + str(user.id))
+                user.set_password('oauth_user_' + email)
                 db.session.add(user)
                 db.session.commit()
             
