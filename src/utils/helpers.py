@@ -1,3 +1,5 @@
+from datetime import datetime
+
 # Utility functions for the app
 
 def format_date(date):
@@ -47,5 +49,3 @@ def get_priority_class(priority):
         'High': 'priority-high'
     }
     return classes.get(priority, 'priority-medium')
-
-from datetime import datetime

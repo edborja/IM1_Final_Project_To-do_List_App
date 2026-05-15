@@ -1,8 +1,11 @@
+# pyrefly: ignore [missing-import]
 from flask import Blueprint, jsonify, request
+# pyrefly: ignore [missing-import]
 from flask_login import current_user, login_required
 from src import db
-from src.models import Task, Category, Pomodoro
+from src.models import Task, Category, Pomodoro, Subtask
 from datetime import datetime, timedelta
+from src.utils.analytics import get_user_stats
 
 api = Blueprint('api', __name__)
 
@@ -152,7 +155,6 @@ def create_subtask(task_id):
         return jsonify({'error': 'Task not found'}), 404
     
     data = request.get_json()
-    from src.models import Subtask
     subtask = Subtask(title=data['title'], task_id=task_id)
     db.session.add(subtask)
     db.session.commit()
@@ -163,7 +165,6 @@ def create_subtask(task_id):
 @login_required
 def update_subtask(subtask_id):
     """Update a subtask"""
-    from src.models import Subtask
     subtask = Subtask.query.get(subtask_id)
     if not subtask:
         return jsonify({'error': 'Subtask not found'}), 404
@@ -185,7 +186,6 @@ def update_subtask(subtask_id):
 @login_required
 def delete_subtask(subtask_id):
     """Delete a subtask"""
-    from src.models import Subtask
     subtask = Subtask.query.get(subtask_id)
     if not subtask:
         return jsonify({'error': 'Subtask not found'}), 404
@@ -264,7 +264,6 @@ def delete_category(category_id):
 @login_required
 def get_analytics():
     """Get analytics data for the current user"""
-    from src.utils.analytics import get_user_stats
     stats = get_user_stats(current_user.id)
     return jsonify(stats)
 

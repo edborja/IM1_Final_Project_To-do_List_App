@@ -1,7 +1,5 @@
-
 # pyrefly: ignore [missing-import]
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, Response
-
 # pyrefly: ignore [missing-import]
 from flask_login import current_user, login_required
 from src import db
@@ -9,7 +7,6 @@ from src.models import Task, Category, Subtask, Pomodoro
 from src.forms import TaskForm, CategoryForm, SubtaskForm
 from src.utils.analytics import get_user_stats
 from datetime import datetime, timedelta
-
 import json
 import csv
 import io
@@ -339,7 +336,6 @@ def edit_category(category_id):
     category.color = color
     category.icon = icon
     db.session.commit()
-    
     return jsonify({'success': True, 'category': category.to_dict()})
 
 @main.route('/category/<int:category_id>/delete', methods=['POST'])
@@ -356,44 +352,14 @@ def delete_category(category_id):
     flash('Category deleted!', 'success')
     return jsonify({'success': True})
 
-# Pomodoro routes
-@main.route('/pomodoro/start/<int:task_id>', methods=['POST'])
-@login_required
-def start_pomodoro(task_id):
-    task = Task.query.get_or_404(task_id)
-    if task.user_id != current_user.id:
-        return jsonify({'success': False}), 403
-    
-    # Create a pomodoro record (in real app, this would track start/end times)
-    pomodoro = Pomodoro(
-        duration=25,
-        user_id=current_user.id,
-        task_id=task_id
-    )
-    db.session.add(pomodoro)
-    db.session.commit()
-    
-    return jsonify({'success': True, 'pomodoro_id': pomodoro.id})
-
-@main.route('/pomodoro/complete/<int:pomodoro_id>', methods=['POST'])
-@login_required
-def complete_pomodoro(pomodoro_id):
-    pomodoro = Pomodoro.query.get_or_404(pomodoro_id)
-    if pomodoro.user_id != current_user.id:
-        return jsonify({'success': False}), 403
-    
-    pomodoro.completed_at = datetime.utcnow()
-    pomodoro.was_completed = True
-    db.session.commit()
-    
-    return jsonify({'success': True})
+# Pomodoro routes are handled via the API blueprint (/api/pomodoros)
 
 # Analytics dashboard
 @main.route('/analytics')
 @login_required
 def analytics():
     stats = get_user_stats(current_user.id)
-    return render_template('analytics.html', stats=stats)
+    return render_template('analytics.html', stats=stats, **stats)
 
 # Reorder tasks (for drag and drop)
 @main.route('/task/reorder', methods=['POST'])
@@ -422,7 +388,6 @@ def data_deletion():
 def export_csv():
     """Export all of the current user's tasks to a CSV file."""
     tasks = Task.query.filter_by(user_id=current_user.id).order_by(Task.created_at.desc()).all()
-
     output = io.StringIO()
     writer = csv.writer(output)
 
@@ -461,11 +426,8 @@ def export_csv():
 
     output.seek(0)
     filename = f"tasks_{current_user.username}_{datetime.utcnow().strftime('%Y%m%d')}.csv"
-
     return Response(
         output.getvalue(),
         mimetype='text/csv',
         headers={'Content-Disposition': f'attachment; filename={filename}'}
-
-
     )

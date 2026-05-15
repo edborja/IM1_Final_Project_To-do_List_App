@@ -52,7 +52,7 @@
                 </div>
             </div>
             <div class="task-actions">
-                <button class="action-btn" onclick="startPomodoro('{{ task.id }}')" title="Focus">🍅</button>
+                <button class="action-btn" onclick="startPomodoro('{{ task.id }}', '{{ task.title|e }}')" title="Focus">🍅</button>
                 <button class="action-btn delete" onclick="deleteTask('{{ task.id }}')" title="Delete">🗑️</button>
             </div>
         </div>

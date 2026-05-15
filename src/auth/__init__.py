@@ -45,7 +45,6 @@ def oauth_login(provider):
         
         # Use explicit redirect URI from config
         redirect_uri = current_app.config.get('OAUTH_REDIRECT_URI')
-        print(f"Using redirect URI: {redirect_uri}")
         
         request_uri = client.prepare_request_uri(
             authorization_endpoint,
@@ -289,7 +288,6 @@ def logout():
     flash('You have been logged out.', 'info')
     return redirect(url_for('auth.login'))
 
-
 @auth.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
     if current_user.is_authenticated:
@@ -321,7 +319,6 @@ def forgot_password():
                 current_app.logger.error(f'Failed to send password reset email: {e}')
         return redirect(url_for('auth.login'))
     return render_template('forgot_password.html', form=form)
-
 
 @auth.route('/reset-password/<token>', methods=['GET', 'POST'])
 def reset_password(token):

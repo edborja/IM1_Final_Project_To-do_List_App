@@ -1,6 +1,7 @@
 from src import db
 from src.models import Task, Category, Pomodoro, Subtask
 from datetime import datetime, timedelta
+# pyrefly: ignore [missing-import]
 from sqlalchemy import func
 
 def get_user_stats(user_id):
@@ -64,6 +65,9 @@ def get_user_stats(user_id):
         func.sum(Pomodoro.duration)
     ).filter(Pomodoro.user_id == user_id).scalar() or 0
     
+    # Total pomodoros
+    total_pomodoros = Pomodoro.query.filter_by(user_id=user_id).count()
+    
     # Daily task completion for the last 7 days
     daily_completion = []
     for i in range(6, -1, -1):
@@ -85,7 +89,7 @@ def get_user_stats(user_id):
         ).count()
         
         daily_completion.append({
-            'date': day.strftime('%Y-%m-%d'),
+            'date': day,
             'day_name': day.strftime('%a'),
             'completed': completed,
             'created': created
@@ -101,13 +105,14 @@ def get_user_stats(user_id):
         'overdue_tasks': overdue_tasks,
         'completion_rate': completion_rate,
         'priority_counts': {p: c for p, c in priority_counts},
-        'category_counts': [{'name': n, 'color': c, 'count': ct} for n, c, ct in category_counts],
+        'categories': [{'name': n, 'color': c, 'task_count': ct} for n, c, ct in category_counts],
         'tasks_this_week': tasks_this_week,
         'completed_this_week': completed_this_week,
+        'total_pomodoros': total_pomodoros,
         'pomodoros_today': pomodoros_today,
         'pomodoros_week': pomodoros_week,
         'total_pomodoro_minutes': total_pomodoro_minutes,
-        'daily_completion': daily_completion,
+        'weekly_data': daily_completion,
         'streak': streak
     }
 
