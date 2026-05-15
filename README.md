@@ -207,7 +207,7 @@ This project follows the **Model-View-Controller (MVC)** architectural pattern i
 
 | Name | Role | Responsibilities |
 | :--- | :--- | :--- |
-| **Eduardo Gabriel S. Musa** | Backend / DB Admin | Created the database schema, models, ERD, and SQL files. |
+| **Eduardo Gabriel S. Musa** and **Edmar B. Borja** | Backend / DB Admin | Created the database schema, models, ERD, and SQL files. |
 | **Noelee Anthony S. Barandon** | Frontend Developer | Designed HTML templates, CSS, and interactive UI logic. |
 | **Edmar B. Borja** | Lead Programmer | Implemented Flask routes, CRUD operations, Authentication. |
 
