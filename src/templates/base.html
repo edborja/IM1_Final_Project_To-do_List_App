@@ -431,6 +431,37 @@
         </main>
     </div>
 
+    <!-- Edit Category Modal -->
+    <div class="modal-overlay" id="editCategoryModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Subject</h2>
+                <button class="modal-close" onclick="closeModal('editCategoryModal')">×</button>
+            </div>
+            <form id="editCategoryForm">
+                <input type="hidden" id="editCategoryId">
+                <div class="form-group">
+                    <label>Subject Name</label>
+                    <input type="text" name="name" id="editCategoryName" required oninput="autoGenerateIconEdit()">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Color</label>
+                        <input type="color" name="color" id="editCategoryColor">
+                    </div>
+                    <div class="form-group">
+                        <label>Icon</label>
+                        <input type="text" name="icon" id="editCategoryIcon" maxlength="2">
+                    </div>
+                </div>
+                <div style="display: flex; gap: 12px; margin-top: 16px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Save Changes</button>
+                    <button type="button" class="btn btn-danger" id="deleteCategoryBtn" style="flex: 1;">Delete</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Pomodoro Timer Modal -->
     <div class="modal-overlay" id="pomodoroModal">
         <div class="pomodoro-modal">
