@@ -36,8 +36,10 @@
         <h3 class="chart-title">Weekly Activity</h3>
         <div class="chart-bars">
             {% for day in weekly_data %}
+            {% set bar_height = [day.created * 10, 150]|min %}
+            {% set style_attr = 'style="height: ' ~ bar_height|string ~ 'px;"' %}
             <div class="chart-bar-wrapper">
-                <div class="chart-bar" style="height: {{ [day.created * 10, 150]|min }}px;"></div>
+                <div class="chart-bar" {{ style_attr|safe }}></div>
                 <span class="chart-label">{{ day.date.strftime('%a') }}</span>
             </div>
             {% endfor %}
