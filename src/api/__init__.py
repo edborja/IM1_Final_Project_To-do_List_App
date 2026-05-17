@@ -251,12 +251,15 @@ def delete_category(category_id):
     if not category or category.user_id != current_user.id:
         return jsonify({'error': 'Category not found'}), 404
     
-    # Remove category from tasks
-    Task.query.filter_by(category_id=category_id).update({'category_id': None})
+    # Delete all tasks associated with this category
+    tasks_to_delete = Task.query.filter_by(category_id=category_id).all()
+    for task in tasks_to_delete:
+        db.session.delete(task)
+        
     db.session.delete(category)
     db.session.commit()
     
-    return jsonify({'message': 'Category deleted'})
+    return jsonify({'message': 'Category and its tasks deleted'})
 
 # ==================== ANALYTICS ====================
 
