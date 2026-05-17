@@ -662,7 +662,7 @@
         
         document.getElementById('deleteCategoryBtn')?.addEventListener('click', function() {
             const id = document.getElementById('editCategoryId').value;
-            if (confirm('Delete this category? Tasks will be unassigned but not deleted.')) {
+            if (confirm('Delete this category? All tasks inside this category will also be completely deleted!')) {
                 fetch(`/category/${id}/delete`, { method: 'POST' })
                 .then(r => r.json())
                 .then(d => {
