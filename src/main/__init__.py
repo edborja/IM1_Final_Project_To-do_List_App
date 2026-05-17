@@ -345,11 +345,14 @@ def delete_category(category_id):
     if category.user_id != current_user.id:
         return jsonify({'success': False}), 403
     
-    # Remove category from tasks but don't delete tasks
-    Task.query.filter_by(category_id=category_id).update({'category_id': None})
+    # Delete all tasks associated with this category to prevent orphans
+    tasks_to_delete = Task.query.filter_by(category_id=category_id).all()
+    for task in tasks_to_delete:
+        db.session.delete(task)
+        
     db.session.delete(category)
     db.session.commit()
-    flash('Category deleted!', 'success')
+    flash('Category and its tasks deleted!', 'success')
     return jsonify({'success': True})
 
 # Pomodoro routes are handled via the API blueprint (/api/pomodoros)
